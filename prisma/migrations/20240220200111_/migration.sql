@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `users` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
     `name` VARCHAR(191) NOT NULL,
     `username` VARCHAR(150) NOT NULL,
     `password` VARCHAR(72) NOT NULL,
@@ -17,6 +18,7 @@ CREATE TABLE `tables` (
     `tableNumber` INTEGER NOT NULL,
     `seats` INTEGER NOT NULL,
     `status` VARCHAR(191) NOT NULL,
+    `user_id` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -27,21 +29,22 @@ CREATE TABLE `venues` (
     `name` VARCHAR(191) NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
+    `user_id` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `reservations` (
-    `reservationId` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NOT NULL,
     `table_id` INTEGER NOT NULL,
     `venue_id` INTEGER NOT NULL,
-    `dateTime` DATETIME(3) NOT NULL,
+    `date_Time` DATE NOT NULL,
     `numberCustomers` INTEGER NOT NULL,
     `status` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`reservationId`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -53,6 +56,12 @@ CREATE TABLE `Staff` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `tables` ADD CONSTRAINT `tables_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `venues` ADD CONSTRAINT `venues_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reservations` ADD CONSTRAINT `reservations_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

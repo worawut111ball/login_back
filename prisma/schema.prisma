@@ -11,51 +11,75 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  name         String
-  username     String        @unique @db.VarChar(150)
-  password     String        @db.VarChar(72)
-  email        String?
-  phone        String
+  id       Int     @id @default(autoincrement())
+  role     Role    @default(USER)
+  name     String
+  username String  @unique @db.VarChar(150)
+  password String  @db.VarChar(72)
+  email    String?
+  phone    String
+
   reservations Reservation[]
+  venue        Venue[]
 
   @@map("users")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model Table {
   id          Int    @id @default(autoincrement())
-  tableNumber Int
+  tableNumber String
   seats       Int
-  status      String
-
+  status      TABLESTATUS
+  venueId     Int?    @map("venue_id")
   reservations Reservation[]
+  Venue        Venue ?        @relation(fields: [venueId], references: [id],onDelete: Cascade, onUpdate: Cascade  )
 
   @@map("tables")
 }
+enum TABLESTATUS {
+  OFF
+  OPEN
+}
+
+
+
 
 model Venue {
   id      Int    @id @default(autoincrement())
   name    String
   address String
   phone   String
+  userId  Int    @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
 
   reservations Reservation[]
+  tables       Table[]
+  User         User          @relation(fields: [userId], references: [id])
 
   @@map("venues")
 }
 
 model Reservation {
-  reservationId   Int      @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   userId          Int      @map("user_id")
   tableId         Int      @map("table_id")
   venueId         Int      @map("venue_id")
-  dateTime        DateTime
+  dateTime        DateTime @map("date_Time") @db.Date
   numberCustomers Int
-  status          String
-  
-  User            User     @relation(fields: [userId], references: [id])
-  Table           Table    @relation(fields: [tableId], references: [id])
-  Venue           Venue    @relation(fields: [venueId], references: [id])
+  status          Status   @default(PENDING)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  User  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Table Table @relation(fields: [tableId], references: [id])
+  Venue Venue @relation(fields: [venueId], references: [id])
 
   @@map("reservations")
 }
