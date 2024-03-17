@@ -31,29 +31,28 @@ enum Role {
 }
 
 model Table {
-  id          Int    @id @default(autoincrement())
-  tableNumber String
-  seats       Int
-  status      TABLESTATUS
-  venueId     Int?    @map("venue_id")
+  id           Int           @id @default(autoincrement())
+  tableNumber  String
+  seats        Int
+  status       TABLESTATUS
+  venueId      Int?          @map("venue_id")
   reservations Reservation[]
-  Venue        Venue ?        @relation(fields: [venueId], references: [id],onDelete: Cascade, onUpdate: Cascade  )
+  Venue        Venue?        @relation(fields: [venueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("tables")
 }
+
 enum TABLESTATUS {
   OFF
   OPEN
 }
-
-
-
 
 model Venue {
   id      Int    @id @default(autoincrement())
   name    String
   address String
   phone   String
+  imageSrc  String?
   userId  Int    @map("user_id")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
@@ -67,32 +66,21 @@ model Venue {
 }
 
 model Reservation {
-  id              Int      @id @default(autoincrement())
-  userId          Int      @map("user_id")
-  tableId         Int      @map("table_id")
-  venueId         Int      @map("venue_id")
-  dateTime        DateTime @map("date_Time") @db.Date
-  numberCustomers Int
-  status          Status   @default(PENDING)
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  id              Int         @id @default(autoincrement())
+  userId          Int?         @map("user_id")
+  tableId         Int?        @map("table_id")
+  venueId         Int?        @map("venue_id")
+  dateTime        DateTime?    @map("date_Time") @db.Date
+  numberCustomers Int?
+  status          TABLESTATUS?
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
 
-  User  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Table Table @relation(fields: [tableId], references: [id])
-  Venue Venue @relation(fields: [venueId], references: [id])
+  User  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Table Table? @relation(fields: [tableId], references: [id])
+  Venue Venue? @relation(fields: [venueId], references: [id])
 
   @@map("reservations")
 }
 
-model Staff {
-  id       Int    @id @default(autoincrement())
-  name     String
-  position String
-  phone    String
-}
 
-enum Status {
-  PENDING
-  DOING
-  DONE
-}
